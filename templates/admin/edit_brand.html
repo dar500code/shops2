@@ -1,0 +1,63 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Edit Brand - {{ brand.name }}{% endblock %}
+{% block page_title %}Edit Brand{% endblock %}
+
+{% block content %}
+<div class="admin-content">
+    <div class="content-header">
+        <nav class="breadcrumb">
+            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a> >
+            <a href="{{ url_for('admin_brands') }}">Brands</a> >
+            <span>Edit {{ brand.name }}</span>
+        </nav>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="admin-form" id="brandForm">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        
+        <div class="form-group">
+            <label for="name">Brand Name *</label>
+            <input type="text" id="name" name="name" class="form-control" 
+                   value="{{ brand.name }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" class="form-control" 
+                      rows="4">{{ brand.description }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="website">Website</label>
+            <input type="url" id="website" name="website" class="form-control" 
+                   value="{{ brand.website }}" placeholder="https://example.com">
+        </div>
+
+        <div class="form-group">
+            <label for="logo">Brand Logo</label>
+            <div class="image-upload-container">
+                {% if brand.logo %}
+                    <div class="current-image">
+                        <img src="{{ url_for('static', filename='images/brands/' + brand.logo) }}" 
+                             alt="{{ brand.name }}">
+                    </div>
+                {% endif %}
+                <input type="file" id="logo" name="logo" accept="image/*">
+                <small class="form-text text-muted">
+                    Leave empty to keep current image. Max size: 2MB, Formats: JPG, PNG, GIF
+                </small>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Save Changes
+            </button>
+            <a href="{{ url_for('admin_brands') }}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Special Deals & Offers{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/deals.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="deals-container">
+    <div class="deals-header">
+        <h1>Special Deals & Offers</h1>
+        <p>Don't miss out on these amazing discounts!</p>
+    </div>
+
+    <!-- Featured Deal -->
+    <div class="featured-deal" data-aos="fade-up">
+        <div class="deal-timer">
+            <span>Ends in:</span>
+            <div class="countdown" data-end="2024-03-31">
+                <div class="time-block">
+                    <span class="days">00</span>
+                    <label>Days</label>
+                </div>
+                <div class="time-block">
+                    <span class="hours">00</span>
+                    <label>Hours</label>
+                </div>
+                <div class="time-block">
+                    <span class="minutes">00</span>
+                    <label>Minutes</label>
+                </div>
+                <div class="time-block">
+                    <span class="seconds">00</span>
+                    <label>Seconds</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deals Grid -->
+    <div class="deals-grid">
+        {% for deal in deals %}
+        <div class="deal-card" data-aos="fade-up">
+            <div class="deal-badge">
+                {% set discount = ((deal.price - deal.discount_price) / deal.price * 100)|round|int %}
+                -{{ discount }}%
+            </div>
+            
+            <div class="deal-image">
+                <img src="{{ url_for('static', filename='images/products/' + deal.image) }}" 
+                     alt="{{ deal.name }}"
+                     loading="lazy">
+            </div>
+            
+            <div class="deal-content">
+                <h3 class="deal-title">{{ deal.name }}</h3>
+                <div class="deal-prices">
+                    <span class="current-price">${{ "%.2f"|format(deal.discount_price) }}</span>
+                    <span class="original-price">${{ "%.2f"|format(deal.price) }}</span>
+                </div>
+                
+                <div class="deal-progress">
+                    {% set sold = range(1, 100)|random %}
+                    {% set available = 100 - sold %}
+                    <div class="progress-bar">
+                        <div class="progress" style="width: {{ sold }}%"></div>
+                    </div>
+                    <div class="progress-labels">
+                        <span>Sold: {{ sold }}</span>
+                        <span>Available: {{ available }}</span>
+                    </div>
+                </div>
+                
+                <button class="add-to-cart" data-product-id="{{ deal.id }}">
+                    Add to Cart
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if not deals %}
+    <div class="no-deals">
+        <i class="fas fa-tag"></i>
+        <h2>No Active Deals</h2>
+        <p>Check back soon for new deals and offers!</p>
+        <a href="{{ url_for('products') }}" class="btn-primary">Browse Products</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Countdown Timer
+    function updateCountdown() {
+        const countdowns = document.querySelectorAll('.countdown');
+        
+        countdowns.forEach(countdown => {
+            const endDate = new Date(countdown.dataset.end);
+            const now = new Date();
+            const diff = endDate - now;
+            
+            if (diff > 0) {
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                countdown.querySelector('.days').textContent = days.toString().padStart(2, '0');
+                countdown.querySelector('.hours').textContent = hours.toString().padStart(2, '0');
+                countdown.querySelector('.minutes').textContent = minutes.toString().padStart(2, '0');
+                countdown.querySelector('.seconds').textContent = seconds.toString().padStart(2, '0');
+            }
+        });
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+</script>
+{% endblock %}

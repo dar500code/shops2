@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Shop by Brands{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/brands.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="brands-container">
+    <div class="brands-header">
+        <h1>Our Featured Brands</h1>
+        <p>Discover quality products from top global brands</p>
+    </div>
+
+    <div class="brands-grid">
+        {% for brand in brands %}
+            <div class="brand-card" data-aos="fade-up" data-aos-delay="{{ loop.index * 100 }}">
+                <div class="brand-logo">
+                    <img src="{{ url_for('static', filename='images/brands/' + brand.logo) }}"
+                         alt="{{ brand.name }}"
+                         loading="lazy">
+                </div>
+                <div class="brand-info">
+                    <h2>{{ brand.name }}</h2>
+                    <p>{{ brand.product_count }} Products</p>
+                </div>
+                <a href="{{ url_for('products', brand=brand.name) }}" class="brand-link">
+                    View Collection
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if not brands %}
+    <div class="no-brands">
+        <i class="fas fa-building"></i>
+        <h2>No Brands Available</h2>
+        <p>Please check back later for brand updates</p>
+        <a href="{{ url_for('products') }}" class="btn-primary">Browse All Products</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Orders Management{% endblock %}
+{% block page_title %}Orders Management{% endblock %}
+
+{% block content %}
+<div class="admin-orders">
+    <div class="orders-list">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Total</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td>#{{ order.id }}</td>
+                        <td>{{ order.user.name }}</td>
+                        <td>{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td><span class="status-badge {{ order.status }}">{{ order.status }}</span></td>
+                        <td>${{ "%.2f"|format(order.total) }}</td>
+                        <td>
+                            <a href="{{ url_for('admin_order_detail', id=order.id) }}" class="btn btn-sm btn-info">
+                                View
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/admin/orders.js') }}"></script>
+{% endblock %}

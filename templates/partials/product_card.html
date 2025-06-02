@@ -1,0 +1,68 @@
+<div class="product-card" data-aos="fade-up">
+    {% if not product.is_public %}
+        <div class="product-badge private">
+            <i class="fas fa-lock"></i> Private
+        </div>
+    {% endif %}
+    {% if product.supplier_id == session.get('user_id') %}
+        <div class="product-badge owner">
+            <i class="fas fa-user"></i> Your Product
+        </div>
+    {% endif %}
+    
+    <div class="product-image">
+        <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
+        <div class="product-actions">
+            <button class="quick-view" data-product-id="{{ product.id }}" title="Quick View">
+                <i class="fas fa-eye"></i>
+            </button>
+            <button class="add-to-cart" 
+                    onclick="window.app.addToCart({{ product.id }})"
+                    data-product-id="{{ product.id }}" 
+                    {% if not product.stock %}disabled{% endif %}
+                    title="{% if product.stock %}Add to Cart{% else %}Out of Stock{% endif %}">
+                <i class="fas {% if product.stock %}fa-cart-plus{% else %}fa-times{% endif %}"></i>
+            </button>
+            <button class="add-to-wishlist" data-product-id="{{ product.id }}" title="Add to Wishlist">
+                <i class="far fa-heart"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="product-info">
+        <h3 class="product-title">
+            <a href="{{ url_for('product_detail', id=product.id) }}">{{ product.name }}</a>
+        </h3>
+        
+        <div class="product-price">
+            <span class="current-price">${{ "%.2f"|format(product.price) }}</span>
+            {% if product.original_price %}
+                <span class="original-price">${{ "%.2f"|format(product.original_price) }}</span>
+                <span class="discount-badge">
+                    {{ ((1 - product.price/product.original_price) * 100)|round|int }}% OFF
+                </span>
+            {% endif %}
+        </div>
+        
+        <div class="product-rating">
+            {% for _ in range(product.rating|int) %}
+                <i class="fas fa-star"></i>
+            {% endfor %}
+            {% if product.rating % 1 != 0 %}
+                <i class="fas fa-star-half-alt"></i>
+            {% endif %}
+            <span class="rating-value">({{ "%.1f"|format(product.rating) }})</span>
+        </div>
+
+        <div class="product-meta">
+            <span class="product-category">{{ product.category }}</span>
+            <span class="product-stock {% if product.stock > 0 %}in-stock{% else %}out-of-stock{% endif %}">
+                {% if product.stock > 0 %}
+                    <i class="fas fa-check"></i> In Stock
+                {% else %}
+                    <i class="fas fa-times"></i> Out of Stock
+                {% endif %}
+            </span>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+
+{{ super() }}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/swiper-bundle.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-slider swiper">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide hero-slide" style="background-image: url('{{ url_for('static', filename='images/hero/hero1.jpg') }}')">
+                <div class="container">
+                    <div class="hero-content">
+                        <span class="hero-subtitle">Summer Collection</span>
+                        <h1 class="hero-title">New Arrivals 2025</h1>
+                        <p class="hero-text">Discover our curated selection of premium products</p>
+                        <a href="{{ url_for('products') }}" class="btn btn-primary btn-lg">Shop Now</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Add more slides as needed -->
+        </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="section features">
+    <div class="container">
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shipping-fast"></i>
+                </div>
+                <h3 class="feature-title">Free Shipping</h3>
+                <p class="feature-text">On all orders over $500</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <h3 class="feature-title">Easy Returns</h3>
+                <p class="feature-text">30 day return policy</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3 class="feature-title">Secure Payment</h3>
+                <p class="feature-text">100% secure checkout</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <h3 class="feature-title">24/7 Support</h3>
+                <p class="feature-text">Dedicated support</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="section categories">
+    <div class="container">
+        <h2 class="section-title">Shop by Category</h2>
+        <div class="category-grid">
+            {% for category in categories %}
+            <a href="{{ url_for('products', category=category[0]) }}" class="category-card">
+                <div class="category-image">
+                    <img src="{{ url_for('static', filename='images/categories/' + category[0].lower() + '.jpg') }}" 
+                         alt="{{ category[0] }}" loading="lazy">
+                    <div class="category-overlay"></div>
+                </div>
+                <h3 class="category-name">{{ category[0] }}</h3>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="section featured-products">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Featured Products</h2>
+            <a href="{{ url_for('products') }}" class="section-link">View All</a>
+        </div>
+        <div class="product-slider swiper">
+            <div class="swiper-wrapper">
+                {% for product in featured_products %}
+                <div class="swiper-slide">
+                    {% include 'partials/product_card.html' %}
+                </div>
+                {% endfor %}
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </div>
+</section>
+
+<!-- New Arrivals -->
+<section class="section new-arrivals">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">New Arrivals</h2>
+            <a href="{{ url_for('products') }}" class="section-link">View All</a>
+        </div>
+        <div class="product-grid">
+            {% for product in new_products %}
+                {% include 'partials/product_card.html' %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+<!-- Testimonials -->
+<section class="section testimonials"></section>
+    <div class="container">
+        <h2 class="section-title">What Our Customers Say</h2>
+        <div class="testimonial-slider swiper">
+            <div class="swiper-wrapper">
+                <!-- Testimonial slides -->
+                <div class="swiper-slide testimonial-card">
+                    <p class="testimonial-text">"Amazing quality and fast shipping! Will definitely shop again."</p>
+                    <div class="testimonial-author">
+                        <img src="{{ url_for('static', filename='images/testimonials/user1.jpg') }}" alt="User 1" class="testimonial-avatar">
+                        <span class="testimonial-name">Alex Johnson</span>
+                    </div>
+                </div>
+                <div class="swiper-slide testimonial-card">
+                    <p class="testimonial-text">"Customer service was super helpful and the products exceeded my expectations."</p>
+                    <div class="testimonial-author">
+                        <img src="{{ url_for('static', filename='images/testimonials/user2.jpg') }}" alt="User 2" class="testimonial-avatar">
+                        <span class="testimonial-name">Maria Lee</span>
+                    </div>
+                </div>
+                <div class="swiper-slide testimonial-card">
+                    <p class="testimonial-text">"Great selection and easy returns. Highly recommend this shop!"</p>
+                    <div class="testimonial-author">
+                        <img src="{{ url_for('static', filename='images/testimonials/user3.jpg') }}" alt="User 3" class="testimonial-avatar">
+                        <span class="testimonial-name">Chris Evans</span>
+                    </div>
+                </div>
+                <div class="swiper-slide testimonial-card">
+                    <p class="testimonial-text">"The new arrivals are always on trend. Love my recent purchase!"</p>
+                    <div class="testimonial-author">
+                        <img src="{{ url_for('static', filename='images/testimonials/user4.jpg') }}" alt="User 4" class="testimonial-avatar">
+                        <span class="testimonial-name">Samantha Green</span>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </div>
+</section>
+</section>
+
+<section class="featured-products">
+    <h2>Featured Products</h2>
+    <div class="product-grid">
+        {% for product in featured_products %}
+            <div class="product-card">
+                <a href="{{ url_for('product_detail', id=product.id) }}">
+                    <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
+                    <h3>{{ product.name }}</h3>
+                    <p>${{ product.price }}</p>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+<section class="new-products">
+    <h2>New Arrivals</h2>
+    <div class="product-grid">
+        {% for product in new_products %}
+            <div class="product-card">
+                <a href="{{ url_for('product_detail', id=product.id) }}">
+                    <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
+                    <h3>{{ product.name }}</h3>
+                    <p>${{ product.price }}</p>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+<section class="best-sellers">
+    <h2>Best Sellers</h2>
+    <div class="product-grid">
+        {% for product in best_sellers %}
+            <div class="product-card">
+                <a href="{{ url_for('product_detail', id=product.id) }}">
+                    <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
+                    <h3>{{ product.name }}</h3>
+                    <p>${{ product.price }}</p>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
+{% endblock %}

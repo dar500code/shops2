@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Shopping Cart{% endblock %}
+
+{% block content %}
+<div class="cart-container">
+    <h1>Shopping Cart</h1>
+    
+    {% if cart_items %}
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="cart-items">
+            {% for item in cart_items %}
+            <div class="cart-item" data-item-id="{{ item.id }}">
+                <div class="item-image">
+                    <img src="{{ url_for('static', filename='images/' + item.product.image) }}" 
+                         alt="{{ item.product.name }}">
+                </div>
+                <div class="item-details">
+                    <h3>{{ item.product.name }}</h3>
+                    <p class="item-price">${{ "%.2f"|format(item.product.price) }}</p>
+                    <div class="quantity-controls">
+                        <button type="button" class="qty-btn minus">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <input type="number" 
+                               class="quantity-input" 
+                               value="1"
+                               min="1" 
+                               max="{{ item.product.stock }}"
+                               data-price="{{ item.product.price }}">
+                        <button type="button" class="qty-btn plus">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <button type="button" class="remove-item">
+                        <i class="fas fa-trash"></i> Remove
+                    </button>
+                </div>
+                <div class="item-subtotal">
+                    ${{ "%.2f"|format(item.product.price * item.quantity) }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="cart-summary">
+            <div class="summary-row">
+                <span>Subtotal:</span>
+                <span class="cart-subtotal">${{ "%.2f"|format(subtotal) }}</span>
+            </div>
+            <div class="summary-row">
+                <span>Shipping:</span>
+                <span>${{ "%.2f"|format(shipping) }}</span>
+            </div>
+            <div class="summary-row">
+                <span>Tax:</span>
+                <span>${{ "%.2f"|format(tax) }}</span>
+            </div>
+            <div class="summary-row total">
+                <span>Total:</span>
+                <span class="cart-total">${{ "%.2f"|format(total) }}</span>
+            </div>
+            <a href="{{ url_for('checkout') }}" class="checkout-btn">
+                Proceed to Checkout
+            </a>
+        </div>
+    {% else %}
+        <div class="empty-cart">
+            <i class="fas fa-shopping-cart"></i>
+            <h2>Your cart is empty</h2>
+            <p>Browse our products and add some items to your cart.</p>
+            <a href="{{ url_for('products') }}" class="btn btn-primary">Continue Shopping</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+{% endblock %}

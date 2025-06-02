@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Order History{% endblock %}
+
+{% block content %}
+<div class="order-history">
+    <div class="container">
+        <h1>Order History</h1>
+        
+        {% if orders %}
+            <div class="orders-list">
+                {% for order in orders %}
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="order-info">
+                                <h3>Order #{{ order.id }}</h3>
+                                <p class="order-date">{{ order.created_at.strftime('%B %d, %Y') }}</p>
+                                <span class="order-status status-{{ order.status }}">{{ order.status }}</span>
+                            </div>
+                            <div class="order-total">
+                                ${{ "%.2f"|format(order.total) }}
+                            </div>
+                        </div>
+                        
+                        <div class="order-items">
+                            {% for item in order.order_items %}
+                                <div class="order-item">
+                                    <picture>
+                                        <source 
+                                            srcset="{{ url_for('static', filename='images/products/webp/' + item.product.image.replace('.jpg', '.webp')) }}"
+                                            type="image/webp">
+                                        <img src="{{ url_for('static', filename='images/products/' + item.product.image) }}"
+                                             alt="{{ item.product.name }}"
+                                             width="80" height="80"
+                                             loading="lazy">
+                                    </picture>
+                                    <div class="item-details">
+                                        <h4>{{ item.product.name }}</h4>
+                                        <p class="item-price">${{ "%.2f"|format(item.price) }} x {{ item.quantity }}</p>
+                                    </div>
+                                    <div class="item-total">
+                                        ${{ "%.2f"|format(item.price * item.quantity) }}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="order-actions">
+                            <a href="{{ url_for('order_confirmation', order_id=order.id) }}" class="btn btn-outline">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-orders">
+                <i class="fas fa-shopping-bag"></i>
+                <h2>No Orders Yet</h2>
+                <p>Start shopping to see your orders here!</p>
+                <a href="{{ url_for('products') }}" class="btn btn-primary">
+                    Browse Products
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

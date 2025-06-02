@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} - {{ config.SITE_NAME }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cart.css') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <header>
+        <nav class="top-nav">
+            <div class="container">
+                <a href="{{ url_for('index') }}" class="logo">
+                    <i class="fas fa-shopping-cart"></i>
+                    {{ config.SITE_NAME }}
+                </a>
+                
+                <form class="search-form" action="{{ url_for('products') }}" method="GET">
+                    <input type="text" name="q" class="search-input" placeholder="Search for products..." value="{{ request.args.get('q', '') }}">
+                    <button type="submit" class="search-button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+                
+                <div class="header-actions">
+                    {% if current_user.is_authenticated %}
+                        <div class="dropdown user-menu">
+                            <button class="dropdown-toggle">
+                                <div class="user-avatar">
+                                    <img src="{{ url_for('static', filename='images/avatars/' + current_user.avatar) }}" alt="{{ current_user.name }}">
+                                </div>
+                                <span class="username">{{ current_user.name }}</span>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a href="{{ url_for('profile') }}" class="dropdown-item">Profile</a>
+                                <a href="{{ url_for('orders') }}" class="dropdown-item">Orders</a>
+                                {% if current_user.user_type == 'admin' %}
+                                    <a href="{{ url_for('admin_dashboard') }}" class="dropdown-item">Admin Panel</a>
+                                {% endif %}
+                                <div class="dropdown-divider"></div>
+                                <a href="{{ url_for('logout') }}" class="dropdown-item">Logout</a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-outline">Login</a>
+                        <a href="{{ url_for('register') }}" class="btn btn-primary">Register</a>
+                    {% endif %}
+                    <a href="{{ url_for('cart') }}" class="cart-button">
+                        <i class="fas fa-shopping-basket"></i>
+                        <span class="cart-count" {% if not cart_count %}style="display: none;"{% endif %}>
+                            {{ cart_count }}
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+        <nav class="main-nav">
+            <div class="container">
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <ul class="nav-menu">
+                    <li><a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">
+                        <i class="fas fa-home"></i> Home
+                    </a></li>
+                    <li><a href="{{ url_for('products') }}" class="nav-link {% if request.endpoint == 'products' %}active{% endif %}">
+                        <i class="fas fa-shopping-bag"></i> Products
+                    </a></li>
+                    <li><a href="{{ url_for('deals') }}" class="nav-link {% if request.endpoint == 'deals' %}active{% endif %}">
+                        <i class="fas fa-tags"></i> Deals
+                    </a></li>
+                    <li><a href="{{ url_for('new_arrivals') }}" class="nav-link {% if request.endpoint == 'new_arrivals' %}active{% endif %}">
+                        <i class="fas fa-star"></i> New Arrivals
+                    </a></li>
+                    <li><a href="{{ url_for('brands') }}" class="nav-link {% if request.endpoint == 'brands' %}active{% endif %}">
+                        <i class="fas fa-crown"></i> Brands
+                    </a></li>
+                </ul>
+            </div>
+            <div class="menu-overlay"></div>
+        </nav>
+    </header>
+
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-title">About Us</h3>
+                    <p class="footer-text">
+                        We are a leading e-commerce platform offering a wide range of products at competitive prices.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h3 class="footer-title">Customer Service</h3>
+                    <ul class="footer-links">
+                        <li><a href="{{ url_for('contact') }}">Contact Us</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Returns</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3 class="footer-title">Follow Us</h3>
+                    <div class="social-links">
+                        <a href="#" class="social-link">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3 class="footer-title">Newsletter</h3>
+                    <form class="newsletter-form">
+                        <input type="email" placeholder="Your email address" required>
+                        <button type="submit">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Modern E-Shop. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

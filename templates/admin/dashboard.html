@@ -1,0 +1,173 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <!-- Stats Overview -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Total Users</h3>
+                <p class="stat-value">{{ stats.total_users }}</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-box"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Total Products</h3>
+                <p class="stat-value">{{ stats.total_products }}</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Total Orders</h3>
+                <p class="stat-value">{{ stats.total_orders }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="card">
+        <div class="card-header">
+            <h2>Recent Orders</h2>
+            <a href="{{ url_for('admin_orders') }}" class="btn btn-primary">View All</a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in stats.recent_orders %}
+                            <tr>
+                                <td><a href="{{ url_for('admin_view_order', id=order.id) }}" class="text-primary">#{{ order.id }}</a></td>
+                                <td>{{ order.user.full_name }}</td>
+                                <td>${{ "%.2f"|format(order.total) }}</td>
+                                <td><span class="status-badge {{ order.status|lower }}">{{ order.status }}</span></td>
+                                <td>{{ order.created_at.strftime('%b %d, %Y') }}</td>
+                                <td class="actions">
+                                    <button class="btn-icon btn-view" data-order-id="{{ order.id }}">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn-icon btn-print" data-order-id="{{ order.id }}">
+                                        <i class="fas fa-print"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Low Stock Products -->
+    <div class="card">
+        <div class="card-header">
+            <h2>Low Stock Products</h2>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Current Stock</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in stats.low_stock_products %}
+                        <tr>
+                            <td>{{ product.name }}</td>
+                            <td>{{ product.stock }}</td>
+                            <td>
+                                <a href="{{ url_for('admin_edit_product', id=product.id) }}" 
+                                   class="btn btn-sm btn-outline">
+                                   Edit
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="3" class="text-center py-4">No low stock products</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Order Quick View Modal -->
+<div class="modal" id="orderModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Order Details</h4>
+                <button type="button" class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body" id="orderDetails">
+                <!-- Content loaded via AJAX -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary close-modal">Close</button>
+                <button type="button" class="btn btn-primary" id="printOrder">Print Invoice</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Restock Modal -->
+<div class="modal" id="restockModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Restock Product</h4>
+                <button type="button" class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="restockForm">
+                    <div class="form-group">
+                        <label for="restockQuantity">Quantity to Add</label>
+                        <input type="number" id="restockQuantity" class="form-control" min="1" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label for="restockNotes">Notes</label>
+                        <textarea id="restockNotes" class="form-control" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary close-modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmRestock">Confirm Restock</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/admindashboard.js') }}"></script>
+{% endblock %}

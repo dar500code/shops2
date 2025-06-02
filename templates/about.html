@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}About Us{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/about.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="about-hero">
+    <div class="container">
+        <h1 class="about-title">About Modern E-Shop</h1>
+        <p class="about-subtitle">Your one-stop destination for quality products at great prices.</p>
+    </div>
+</section>
+
+<section class="about-content">
+    <div class="container">
+        <div class="about-section">
+            <h2>Who We Are</h2>
+            <p>Modern E-Shop is a leading online retailer offering a wide range of products, from electronics to fashion, home essentials, and more. Our mission is to provide our customers with the best shopping experience by offering high-quality products, competitive prices, and exceptional customer service.</p>
+        </div>
+
+        <div class="about-section">
+            <h2>Our Mission</h2>
+            <p>We aim to make online shopping easy, accessible, and enjoyable for everyone. By leveraging the latest technology and trends, we ensure that our customers have access to the best products and deals available in the market.</p>
+        </div>
+
+        <div class="about-section">
+            <h2>Why Choose Us?</h2>
+            <ul class="about-list">
+                <li><i class="fas fa-check-circle"></i> Wide range of high-quality products</li>
+                <li><i class="fas fa-check-circle"></i> Competitive pricing and exclusive deals</li>
+                <li><i class="fas fa-check-circle"></i> Secure and seamless shopping experience</li>
+                <li><i class="fas fa-check-circle"></i> Fast and reliable shipping</li>
+                <li><i class="fas fa-check-circle"></i> Dedicated customer support</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section class="about-team">
+    <div class="container">
+        <h2>Meet Our Team</h2>
+        <div class="team-grid">
+            <div class="team-member">
+                <img src="{{ url_for('static', filename='images/team/member1.jpg') }}" alt="Team Member 1">
+                <h3>John Doe</h3>
+                <p>Founder & CEO</p>
+            </div>
+            <div class="team-member">
+                <img src="{{ url_for('static', filename='images/team/member2.jpg') }}" alt="Team Member 2">
+                <h3>Jane Smith</h3>
+                <p>Chief Marketing Officer</p>
+            </div>
+            <div class="team-member">
+                <img src="{{ url_for('static', filename='images/team/member3.jpg') }}" alt="Team Member 3">
+                <h3>Emily Johnson</h3>
+                <p>Head of Operations</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="about-cta">
+    <div class="container">
+        <h2>Join Our Community</h2>
+        <p>Be a part of the Modern E-Shop family and enjoy exclusive deals, updates, and more.</p>
+        <a href="{{ url_for('register') }}" class="btn btn-primary">Sign Up Now</a>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Brand Management{% endblock %}
+{% block page_title %}Brand Management{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/brands.css') }}">
+{% endblock %}
+
+{% block header_actions %}
+<a href="{{ url_for('admin_new_brand') }}" class="btn btn-primary">
+    <i class="fas fa-plus"></i> Add New Brand
+</a>
+{% endblock %}
+
+{% block content %}
+<div class="data-table">
+    <div class="table-header">
+        <div class="table-actions">
+            <input type="text" placeholder="Search brands..." class="search-input">
+        </div>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Logo</th>
+                <th>Name</th>
+                <th>Website</th>
+                <th>Products</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for brand in brands %}
+            <tr>
+                <td>
+                    {% if brand.logo %}
+                        <img src="{{ url_for('static', filename='images/brands/' + brand.logo) }}" width="50" alt="{{ brand.name }}">
+                    {% else %}
+                        <i class="fas fa-building"></i>
+                    {% endif %}
+                </td>
+                <td>{{ brand.name }}</td>
+                <td>
+                    {% if brand.website %}
+                        <a href="{{ brand.website }}" target="_blank">{{ brand.website }}</a>
+                    {% endif %}
+                </td>
+                <td>{{ brand.products|length }}</td>
+                <td>
+                    <div class="action-buttons">
+                        <a href="{{ url_for('admin_edit_brand', id=brand.id) }}" class="btn-icon">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form method="POST" action="{{ url_for('admin_delete_brand', id=brand.id) }}" 
+                              style="display:inline" onsubmit="return confirm('Are you sure you want to delete this brand?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn-icon text-danger">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.querySelector('.search-input');
+    const tableRows = document.querySelectorAll('tbody tr');
+    
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        
+        tableRows.forEach(row => {
+            const brandName = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+            row.style.display = brandName.includes(searchTerm) ? '' : 'none';
+        });
+    });
+});
+</script>
+{% endblock %}

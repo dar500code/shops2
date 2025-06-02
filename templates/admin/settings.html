@@ -1,0 +1,198 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Site Settings{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/settings.css') }}">
+<style>
+.save-status {
+    margin-left: 1rem;
+    display: inline-block;
+    transition: opacity 0.3s;
+}
+
+.save-status.success {
+    color: #28a745;
+}
+
+.save-status.error {
+    color: #dc3545;
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.form-actions {
+    display: flex;
+    align-items: center;
+}
+
+.settings-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+/* Add nice transition for saving feedback */
+@keyframes saving {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.saving-indicator {
+    animation: saving 0.3s ease-in-out;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-settings">
+    <form method="POST" class="settings-form" id="siteSettingsForm">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        
+        <div class="settings-section">
+            <h2>General Settings</h2>
+            <div class="form-group">
+                <label for="site_name">Site Name</label>
+                <input type="text" id="site_name" name="site_name" 
+                       value="{{ config.SITE_NAME }}" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="site_description">Site Description</label>
+                <textarea id="site_description" name="site_description" 
+                          class="form-control">{{ config.SITE_DESCRIPTION }}</textarea>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h2>Contact Information</h2>
+            <div class="form-group">
+                <label for="contact_email">Contact Email</label>
+                <input type="email" id="contact_email" name="contact_email" value="{{ config.CONTACT_EMAIL }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="contact_phone">Contact Phone</label>
+                <input type="tel" id="contact_phone" name="contact_phone" value="{{ config.CONTACT_PHONE }}" class="form-control">
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h2>Email Settings</h2>
+            <div class="form-group">
+                <label for="smtp_host">SMTP Host</label>
+                <input type="text" id="smtp_host" name="smtp_host" value="{{ config.MAIL_SERVER }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="smtp_port">SMTP Port</label>
+                <input type="number" id="smtp_port" name="smtp_port" value="{{ config.MAIL_PORT }}" class="form-control">
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h2>Social Media</h2>
+            <div class="form-group">
+                <label for="facebook_url">Facebook URL</label>
+                <input type="url" id="facebook_url" name="facebook_url" value="{{ config.FACEBOOK_URL }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="twitter_url">Twitter URL</label>
+                <input type="url" id="twitter_url" name="twitter_url" value="{{ config.TWITTER_URL }}" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="instagram_url">Instagram URL</label>
+                <input type="url" id="instagram_url" name="instagram_url" value="{{ config.INSTAGRAM_URL }}" class="form-control">
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="submitBtn" disabled>
+                <i class="fas fa-save"></i> Save Changes
+            </button>
+            <div class="save-status" id="saveStatus"></div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('siteSettingsForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const saveStatus = document.getElementById('saveStatus');
+    let saveTimeout;
+    let originalValues = {};
+
+    // Store original values
+    document.querySelectorAll('input, textarea').forEach(input => {
+        originalValues[input.name] = input.value;
+    });
+
+    // Enable save button only when changes are made
+    form.addEventListener('input', function() {
+        let hasChanges = false;
+        document.querySelectorAll('input, textarea').forEach(input => {
+            if (input.value !== originalValues[input.name]) {
+                hasChanges = true;
+            }
+        });
+        submitBtn.disabled = !hasChanges;
+    });
+
+    // Handle input changes with debounce
+    form.addEventListener('input', function(e) {
+        clearTimeout(saveTimeout);
+        const target = e.target;
+        
+        // Show saving indicator
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+        
+        // Debounce save for 500ms
+        saveTimeout = setTimeout(() => {
+            saveChanges();
+        }, 500);
+    });
+
+    async function saveChanges() {
+        try {
+            const formData = new FormData(form);
+            const response = await fetch('{{ url_for("admin_settings") }}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': formData.get('csrf_token')
+                }
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                showSaveStatus('success', 'Changes saved');
+            } else {
+                throw new Error(result.message || 'Save failed');
+            }
+        } catch (error) {
+            showSaveStatus('error', error.message);
+        } finally {
+            submitBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+        }
+    }
+
+    function showSaveStatus(type, message) {
+        saveStatus.textContent = message;
+        saveStatus.className = `save-status ${type}`;
+        
+        // Clear status after 3 seconds
+        setTimeout(() => {
+            saveStatus.textContent = '';
+            saveStatus.className = 'save-status';
+        }, 3000);
+    }
+});
+</script>
+{% endblock %}
